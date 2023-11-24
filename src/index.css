@@ -15,6 +15,8 @@
     stroke-width: 4;
 }
 
+/* toolbar */
+
 .toolBarItem {
     @apply cursor-pointer p-2 rounded-lg transition-colors hover:bg-blue-300 hover:text-white;
 }

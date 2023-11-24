@@ -14,6 +14,13 @@ const App: FC = () => {
     drawRectangle,
     drawCircle,
     drawTriangle,
+    selectShape,
+    moveShape,
+    addText,
+    selectText,
+    moveText,
+    selectImage,
+    moveImage,
     erase,
   } = useTools();
 
@@ -61,6 +68,34 @@ const App: FC = () => {
             className="absolute"
             ref={canvasRef}
             onMouseDown={(e) => drawTriangle(e)}
+          ></canvas>
+        ) : selectedTool === "text" ? (
+          <canvas
+            className="absolute"
+            ref={canvasRef}
+            onMouseDown={(e) => addText(e)}
+          ></canvas>
+        ) : selectedTool === "picture" ? (
+          <canvas
+            className="absolute"
+            ref={canvasRef}
+            onClick={(e) => selectImage(e)}
+            onMouseMove={(e) => moveImage(e)}
+          ></canvas>
+        ) : selectedTool === "cursor" ? (
+          <canvas
+            className="absolute"
+            ref={canvasRef}
+            onClick={(e) => {
+              selectImage(e);
+              selectShape(e);
+              selectText(e);
+            }}
+            onMouseMove={(e) => {
+              moveImage(e);
+              moveShape(e);
+              moveText(e);
+            }}
           ></canvas>
         ) : (
           <canvas className="absolute" ref={canvasRef}></canvas>

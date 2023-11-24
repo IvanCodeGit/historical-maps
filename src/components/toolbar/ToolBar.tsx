@@ -20,7 +20,7 @@ const ToolBar: FC = () => {
     setToolsAreShown(!toolsAreShown);
   };
 
-  const { selectedTool, selectTool, removeAll } = useTools();
+  const { selectedTool, selectTool, uploadImage, removeAll } = useTools();
 
   return (
     <div className="bg-white shadow-md m-2 lg:m-6 w-min h-min rounded-lg items-center content-center flex flex-col">
@@ -98,8 +98,24 @@ const ToolBar: FC = () => {
             className={
               selectedTool === "picture" ? "toolBarItemSelected" : "toolBarItem"
             }
-            onClick={() => selectTool("picture")}
+            onClick={() => {
+              selectTool("picture");
+              const input = document.getElementById("image");
+              input?.click();
+            }}
           >
+            <input
+              id="image"
+              type="file"
+              onChange={(e) => uploadImage(e)}
+              accept="image/*"
+              style={{
+                display: "block",
+                visibility: "hidden",
+                width: 0,
+                height: 0,
+              }}
+            />
             <Image />
           </li>
           <li
