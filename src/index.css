@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    /* overflow: hidden; */
+}
+
 /* map */
 
 #Ukraine {
@@ -15,24 +19,18 @@
     stroke-width: 4;
 }
 
-/* toolbar */
-
 .toolBarItem {
-    @apply cursor-pointer p-2 rounded-lg transition-colors hover:bg-blue-300 hover:text-white;
+   @apply cursor-pointer p-2 mr-4 last:mr-0 transition-colors hover:bg-blue-300 hover:text-white rounded-lg
 }
 
-.toolBarItemSelected {
-    @apply cursor-pointer p-2 rounded-lg transition-colors bg-blue-300 text-white;
+.selectedToolBarItem {
+    @apply cursor-pointer p-2 mr-4 transition-colors bg-blue-300 text-white rounded-lg
 }
 
-.toolBarItemDeleteAll {
-    @apply cursor-pointer p-2 rounded-lg transition-colors hover:bg-red-300 hover:text-white;
+.portrait {
+    @apply w-[200px] h-[250px] mr-6 cursor-pointer rounded-md border-4 hover:border-blue-300 transition-colors
 }
 
-.shapeItem {
-    @apply cursor-pointer rounded-lg transition-colors hover:bg-blue-300 hover:text-white;
-}
-
-.shapeItemSelected {
-    @apply  cursor-pointer rounded-lg transition-colors bg-blue-300 text-white;
+.selectedPortrait {
+    @apply w-[200px] h-[250px] mr-6 cursor-pointer rounded-md border-4 border-blue-300
 }
