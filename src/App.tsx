@@ -58,7 +58,7 @@ const nearPoint = (
   y: number,
   x1: number,
   y1: number,
-  name: string
+  name: string,
 ) => {
   return Math.abs(x - x1) < 5 && Math.abs(y - y1) < 5 ? name : null;
 };
@@ -70,7 +70,7 @@ const onLine = (
   y2: number,
   x: number,
   y: number,
-  maxDistance = 1
+  maxDistance = 1,
 ) => {
   const a = { x: x1, y: y1 };
   const b = { x: x2, y: y2 };
@@ -160,7 +160,7 @@ const resizedCoordinates = (
   clientX: number,
   clientY: number,
   position: string,
-  coordinates: { x1: number; y1: number; x2: number; y2: number }
+  coordinates: { x1: number; y1: number; x2: number; y2: number },
 ) => {
   const { x1, y1, x2, y2 } = coordinates;
   switch (position) {
@@ -212,7 +212,7 @@ const getSvgPathFromStroke = (stroke: any) => {
       acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
       return acc;
     },
-    ["M", ...stroke[0], "Q"]
+    ["M", ...stroke[0], "Q"],
   );
 
   d.push("Z");
@@ -229,7 +229,7 @@ const drawElement = (roughCanvas: RoughCanvas, ctx: any, element: any) => {
       const stroke = getSvgPathFromStroke(
         getStroke(element.points, {
           size: element.size,
-        })
+        }),
       );
       ctx.fillStyle = element.color === "none" ? "black" : element.color;
       ctx.fill(new Path2D(stroke));
@@ -246,7 +246,7 @@ const drawElement = (roughCanvas: RoughCanvas, ctx: any, element: any) => {
         element.x1,
         element.y1,
         element.img.width,
-        element.img.height
+        element.img.height,
       );
       break;
     default:
@@ -257,11 +257,18 @@ const drawElement = (roughCanvas: RoughCanvas, ctx: any, element: any) => {
 const adjustmentRequired = (type: string) =>
   ["line", "rectangle"].includes(type);
 
+interface Tooltip {
+  show: boolean;
+  type: string;
+}
+
 const App: FC = () => {
   const [elements, setElements, undo, redo] = useHistory([]);
   const [action, setAction] = useState("none");
   const [tool, setTool] = useState("selection");
   const [selectedElement, setSelectedElement] = useState<any>(null);
+
+  const [tooltip, setTooltip] = useState<Tooltip>({} as Tooltip);
 
   const [selectorFillColorIsShown, setSelectorFillColorIsShown] =
     useState(false);
@@ -283,9 +290,8 @@ const App: FC = () => {
     type: string,
     imageName?: string,
     color = fillColor,
-    size = lineSize
+    size = lineSize,
   ) => {
-    console.log(color);
     switch (type) {
       case "line":
         const line = generator.line(x1, y1, x2, y2, {
@@ -465,7 +471,7 @@ const App: FC = () => {
     type: string,
     color?: string,
     options?: { text: string },
-    imageName?: string
+    imageName?: string,
   ) => {
     const elementsCopy = [...elements];
     switch (type) {
@@ -479,7 +485,7 @@ const App: FC = () => {
           y2,
           type,
           undefined,
-          color
+          color,
         );
         break;
       case "pencil":
@@ -494,7 +500,7 @@ const App: FC = () => {
         const textWidth = ctx.measureText(options?.text).width;
         const textHeight = 24;
         elementsCopy[id] = {
-          ...createElement(id, x1, y1, x1 + textWidth, y1 + textHeight, type),
+          ...createElement(id, x1, y1, x1 + textWidth, y1 + textHeight, type, undefined, color),
           text: options?.text,
         };
         break;
@@ -518,10 +524,10 @@ const App: FC = () => {
       if (element) {
         if (element.type === "pencil") {
           const xOffsets = element.points.map(
-            (point: any) => clientX - point.x
+            (point: any) => clientX - point.x,
           );
           const yOffsets = element.points.map(
-            (point: any) => clientY - point.y
+            (point: any) => clientY - point.y,
           );
           setSelectedElement({ ...element, xOffsets, yOffsets });
         } else {
@@ -545,7 +551,57 @@ const App: FC = () => {
         clientY,
         clientX,
         clientY,
-        tool
+        tool,
+      );
+      setElements((prev: any) => [...prev, element]);
+      setSelectedElement(element);
+
+      setAction(tool === "text" ? "writing" : "drawing");
+    }
+  };
+
+  const handleTouchStart = (e: any) => {
+    if (action === "writing") return;
+
+    const canvas: any = document.getElementById("canvas");
+
+    const touch = e.touches[0];
+    const clientX = touch.clientX - canvas.offsetLeft;
+    const clientY = touch.clientY - canvas.offsetTop;
+
+    if (tool === "selection") {
+      const element = getElementAtPosition(clientX, clientY, elements);
+      if (element) {
+        if (element.type === "pencil") {
+          const xOffsets = element.points.map(
+            (point: any) => clientX - point.x,
+          );
+          const yOffsets = element.points.map(
+            (point: any) => clientY - point.y,
+          );
+          setSelectedElement({ ...element, xOffsets, yOffsets });
+        } else {
+          const offsetX = clientX - element.x1;
+          const offsetY = clientY - element.y1;
+          setSelectedElement({ ...element, offsetX, offsetY });
+        }
+        setElements((prev: any) => prev);
+
+        if (element.position === "inside") {
+          setAction("moving");
+        } else {
+          setAction("resizing");
+        }
+      }
+    } else {
+      const id = elements.length;
+      const element = createElement(
+        id,
+        clientX,
+        clientY,
+        clientX,
+        clientY,
+        tool,
       );
       setElements((prev: any) => [...prev, element]);
       setSelectedElement(element);
@@ -572,7 +628,7 @@ const App: FC = () => {
         elements[index].y1,
         clientX,
         clientY,
-        tool
+        tool,
       );
     } else if (action === "moving") {
       if (selectedElement.type === "pencil") {
@@ -604,7 +660,7 @@ const App: FC = () => {
           type,
           color,
           options,
-          imageName
+          imageName,
         );
       }
     } else if (action === "resizing") {
@@ -614,7 +670,76 @@ const App: FC = () => {
         e.clientX,
         e.clientY,
         position,
-        coordinates
+        coordinates,
+      );
+      updateElement(id, x1, y1, x2, y2, type, color, undefined, imageName);
+    }
+  };
+
+  const handleTouchMove = (e: any) => {
+    const canvas: any = document.getElementById("canvas");
+
+    const touch = e.touches[0];
+    const clientX = touch.clientX - canvas.offsetLeft;
+    const clientY = touch.clientY - canvas.offsetTop;
+    if (tool === "selection") {
+      const element = getElementAtPosition(clientX, clientY, elements);
+      e.target.style.cursor = element
+        ? cursorForPosition(element.position)
+        : "default";
+    }
+
+    if (action === "drawing") {
+      const index = elements.length - 1;
+      updateElement(
+        index,
+        elements[index].x1,
+        elements[index].y1,
+        clientX,
+        clientY,
+        tool,
+      );
+    } else if (action === "moving") {
+      if (selectedElement.type === "pencil") {
+        const newPoints = selectedElement.points.map((_: any, idx: number) => ({
+          x: clientX - selectedElement.xOffsets[idx],
+          y: clientY - selectedElement.yOffsets[idx],
+        }));
+        const elementsCopy = [...elements];
+        elementsCopy[selectedElement.id] = {
+          ...elementsCopy[selectedElement.id],
+          points: newPoints,
+        };
+        setElements(elementsCopy, true);
+      } else {
+        const { id, x1, x2, y1, y2, type, offsetX, offsetY, color, imageName } =
+          selectedElement;
+        const width = x2 - x1;
+        const height = y2 - y1;
+        const offsetX1 = clientX - offsetX;
+        const offsetY1 = clientY - offsetY;
+        const options =
+          type === "text" ? { text: selectedElement.text } : undefined;
+        updateElement(
+          id,
+          offsetX1,
+          offsetY1,
+          offsetX1 + width,
+          offsetY1 + height,
+          type,
+          color,
+          options,
+          imageName,
+        );
+      }
+    } else if (action === "resizing") {
+      const { id, type, position, imageName, color, fill, ...coordinates } =
+        selectedElement;
+      const { x1, y1, x2, y2 } = resizedCoordinates(
+        e.clientX,
+        e.clientY,
+        position,
+        coordinates,
       );
       updateElement(id, x1, y1, x2, y2, type, color, undefined, imageName);
     }
@@ -650,13 +775,54 @@ const App: FC = () => {
     setSelectedElement(null);
   };
 
-  const handleBlur = (e: any) => {
-    const { id, x1, y1, type } = selectedElement;
+  const handleTouchEnd = (e: any) => { 
+    const canvas: any = document.getElementById("canvas");
+
+    const touch = e.touches[0];
+    const clientX = touch.clientX - canvas.offsetLeft;
+    const clientY = touch.clientY - canvas.offsetTop;
+    if (selectedElement) {
+      if (
+        selectedElement.type === "text" &&
+        clientX - selectedElement.offsetX === selectedElement.x1 &&
+        clientY - selectedElement.offsetY === selectedElement.y1
+      ) {
+        setAction("writing");
+        return;
+      }
+
+      const index = selectedElement.id;
+      const { id, type, color } = elements[index];
+      if (
+        (action === "drawing" || action === "resizing") &&
+        adjustmentRequired(type)
+      ) {
+        const { x1, x2, y1, y2 } = adjustElementCoordinates(elements[index]);
+        updateElement(id, x1, y1, x2, y2, type, color);
+      }
+    }
+
+    if (action === "writing") return;
+
     setAction("none");
     setSelectedElement(null);
-    updateElement(id, x1, y1, null, null, type, undefined, {
+  };
+
+  const handleBlur = (e: any) => {
+    const { id, x1, y1, type, color } = selectedElement;
+    setAction("none");
+    setSelectedElement(null);
+    updateElement(id, x1, y1, null, null, type, color, {
       text: e.target.value,
     });
+  };
+
+  const activateTooltip = (type: string) => {
+    setTooltip({ ...tooltip, show: true, type: type });
+  };
+
+  const diactivateTooltip = () => {
+    setTooltip({ ...tooltip, show: false });
   };
 
   const clearCanvas = () => {
@@ -667,16 +833,47 @@ const App: FC = () => {
     setElements([]);
   };
 
+  const renderTooltip = (type: string) => {
+    switch (type) {
+      case "selection":
+        return <p>Курсор</p>;
+      case "pencil":
+        return <p>Олівець</p>;
+      case "line":
+        return <p>Лінія</p>;
+      case "rectangle":
+        return <p>Квадрат</p>;
+      case "text":
+        return <p>Текст</p>;
+      case "undo":
+        return <p>Повернути дію</p>;
+      case "redo":
+        return <p>Переробити дію</p>;
+      case "delete":
+        return <p>Видалити все</p>;
+      case "fill":
+        return <p>Колір заливки</p>;
+      case "clear":
+        return <p>Прибрати колір заливки</p>;
+      case "size":
+        return <p>Розмір лінії</p>;
+      case "library":
+        return <p>Бібліотека</p>;
+    }
+  };
+
   return (
     <div>
-      <div className="flex fixed z-[2]">
-        <div className="m-6 bg-white shadow-md rounded-lg">
-          <ul className="flex p-4 justify-center items-center">
+      <div className="lg:flex fixed z-[2]">
+        <div className="lg:m-6 m-2 bg-white shadow-md rounded-lg flex items-center">
+          <ul className="flex lg:p-4 p-2 justify-center items-center">
             <li
               className={
                 tool === "selection" ? "selectedToolBarItem" : "toolBarItem"
               }
               onClick={() => setTool("selection")}
+              onMouseEnter={() => activateTooltip("selection")}
+              onMouseLeave={() => diactivateTooltip()}
             >
               <MousePointer />
             </li>
@@ -685,6 +882,8 @@ const App: FC = () => {
                 tool === "pencil" ? "selectedToolBarItem" : "toolBarItem"
               }
               onClick={() => setTool("pencil")}
+              onMouseEnter={() => activateTooltip("pencil")}
+              onMouseLeave={() => diactivateTooltip()}
             >
               <Edit2 />
             </li>
@@ -693,6 +892,8 @@ const App: FC = () => {
                 tool === "line" ? "selectedToolBarItem" : "toolBarItem"
               }
               onClick={() => setTool("line")}
+              onMouseEnter={() => activateTooltip("line")}
+              onMouseLeave={() => diactivateTooltip()}
             >
               <Edit3 />
             </li>
@@ -701,6 +902,8 @@ const App: FC = () => {
                 tool === "rectangle" ? "selectedToolBarItem" : "toolBarItem"
               }
               onClick={() => setTool("rectangle")}
+              onMouseEnter={() => activateTooltip("rectangle")}
+              onMouseLeave={() => diactivateTooltip()}
             >
               <Square />
             </li>
@@ -725,23 +928,41 @@ const App: FC = () => {
                 tool === "text" ? "selectedToolBarItem" : "toolBarItem"
               }
               onClick={() => setTool("text")}
+              onMouseEnter={() => activateTooltip("text")}
+              onMouseLeave={() => diactivateTooltip()}
             >
               <Type />
             </li>
-            <li className="toolBarItem" onClick={undo}>
+            <li
+              className="toolBarItem"
+              onClick={undo}
+              onMouseEnter={() => activateTooltip("undo")}
+              onMouseLeave={() => diactivateTooltip()}
+            >
               <CornerUpLeft />
             </li>
-            <li className="toolBarItem" onClick={redo}>
+            <li
+              className="toolBarItem"
+              onClick={redo}
+              onMouseEnter={() => activateTooltip("redo")}
+              onMouseLeave={() => diactivateTooltip()}
+            >
               <CornerUpRight />
             </li>
-            <li className="toolBarItem" onClick={clearCanvas}>
+            <li
+              className="toolBarItem"
+              onClick={clearCanvas}
+              onMouseEnter={() => activateTooltip("delete")}
+              onMouseLeave={() => diactivateTooltip()}
+            >
               <Trash2 />
             </li>
           </ul>
         </div>
-        <div className="m-6 ml-0 bg-white shadow-md rounded-lg flex items-center content-center justify-center">
-          <ul className="flex justify-center items-center p-4">
-            <li className="p-2 mr-4">
+        <div className="flex lg:m-0 m-2">
+        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg flex items-center content-center justify-center">
+          <ul className="flex justify-center items-center lg:p-4 p-2">
+            <li className="lg:p-2 mr-4">
               <div
                 className="w-6 h-6 border-2 rounded-md border-black cursor-pointer"
                 style={{
@@ -750,6 +971,8 @@ const App: FC = () => {
                 onClick={() =>
                   setSelectorFillColorIsShown(!selectorFillColorIsShown)
                 }
+                onMouseEnter={() => activateTooltip("fill")}
+                onMouseLeave={diactivateTooltip}
               ></div>
               {selectorFillColorIsShown && (
                 <Sketch
@@ -759,38 +982,51 @@ const App: FC = () => {
                 />
               )}
             </li>
-            <li className="p-2" onClick={() => setFillColor("none")}>
+            <li
+              className="lg:p-2"
+              onClick={() => setFillColor("none")}
+              onMouseEnter={() => activateTooltip("clear")}
+              onMouseLeave={diactivateTooltip}
+            >
               <div className="w-6 h-6 border-2 rounded-md border-black cursor-pointer text-center items-center justify-center flex">
                 X
               </div>
             </li>
           </ul>
         </div>
-        <div className="m-6 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center flex">
-          <ul className="flex px-4 content-center items-center justify-center">
-            <li className="transition-colors rounded-lg content-center items-center justify-center flex flex-col">
+        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center flex">
+          <ul className="flex lg:px-4 px-2 content-center items-center justify-center">
+            <li
+              className="transition-colors rounded-lg content-center items-center justify-center flex flex-col"
+              onMouseEnter={() => activateTooltip("size")}
+              onMouseLeave={diactivateTooltip}
+            >
               <p>{lineSize.toString()}</p>
               <input
+                className="lg:w-auto w-[100px]"
                 type="range"
                 min="1"
-                max="100"
+                max="50"
                 value={lineSize}
                 onChange={(e) => setLineSize(parseInt(e.target.value))}
               />
             </li>
           </ul>
         </div>
-        <div className="m-6 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
-          <ul className="flex p-4 content-center items-center justify-center">
+        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
+          <ul className="flex lg:p-4 p-2 content-center items-center justify-center">
             <li
-              className="cursor-pointer p-2 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
+              className="cursor-pointer lg:p-2 p-1 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
               onClick={() => setLibraryIsShown(true)}
+              onMouseEnter={() => activateTooltip("library")}
+              onMouseLeave={diactivateTooltip}
             >
               <Grid />
             </li>
           </ul>
         </div>
       </div>
+    </div>
       {action === "writing" ? (
         <textarea
           ref={textAreaRef}
@@ -813,7 +1049,7 @@ const App: FC = () => {
       <UkraineMap />
       {libraryIsShwon && (
         <div
-          className="bg-white shadow-md p-2 rounded-md grid grid-cols-6 absolute items-center justify-center z-10 w-full h-full"
+          className="bg-white shadow-md p-2 rounded-md grid lg:grid-cols-6 grid-cols-4 absolute items-center justify-center z-10 w-full h-full"
           onClick={() => setLibraryIsShown(false)}
         >
           <img
@@ -948,6 +1184,11 @@ const App: FC = () => {
           />
         </div>
       )}
+      {tooltip.show === true && (
+        <div className="absolute lg:top-24 top-[140px] lg:left-6 left-2 bg-white rounded-md shadow-md p-2">
+          {renderTooltip(tooltip.type)}
+        </div>
+      )}
       <canvas
         id="canvas"
         width={window.innerWidth}
@@ -955,6 +1196,9 @@ const App: FC = () => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         className="absolute z-[1] w-full h-full"
       ></canvas>
     </div>

@@ -3,34 +3,35 @@
 @tailwind utilities;
 
 body {
-    /* overflow: hidden; */
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* map */
 
 #Ukraine {
-    height: 95vh;
-    margin: 24px;
+  height: 95vh;
+  margin: 24px;
 }
 
 .mapBackground {
-    fill: #74B2FF;
-    stroke: #74B2FF;
-    stroke-width: 4;
+  fill: #74b2ff;
+  stroke: #74b2ff;
+  stroke-width: 4;
 }
 
 .toolBarItem {
-   @apply cursor-pointer p-2 mr-4 last:mr-0 transition-colors hover:bg-blue-300 hover:text-white rounded-lg
+  @apply cursor-pointer lg:p-2 p-[4px] mr-4 last:mr-0 transition-colors hover:bg-blue-300 hover:text-white rounded-lg;
 }
 
 .selectedToolBarItem {
-    @apply cursor-pointer p-2 mr-4 transition-colors bg-blue-300 text-white rounded-lg
+  @apply cursor-pointer lg:p-2 p-[4px] mr-4 transition-colors bg-blue-300 text-white rounded-lg;
 }
 
 .portrait {
-    @apply w-[200px] h-[250px] mr-6 cursor-pointer rounded-md border-4 hover:border-blue-300 transition-colors
+  @apply lg:w-[200px] lg:h-[250px] w-[70px] h-[100px] lg:mr-6 cursor-pointer rounded-md border-4 hover:border-blue-300 transition-colors;
 }
 
 .selectedPortrait {
-    @apply w-[200px] h-[250px] mr-6 cursor-pointer rounded-md border-4 border-blue-300
+  @apply lg:w-[200px] lg:h-[250px] w-[70px] h-[100px] lg:mr-6 cursor-pointer rounded-md border-4 border-blue-300;
 }
