@@ -32,27 +32,6 @@ import Konovalec from "./assets/portraits/Konovalec.png";
 
 const generator = rough.generator();
 
-// interface Element {
-//   id: number;
-//   x1: number;
-//   y1: number;
-//   x2: number;
-//   y2: number;
-//   points: any;
-//   type:
-//     | "selection"
-//     | "pencil"
-//     | "line"
-//     | "rectangle"
-//     | "circle"
-//     | "triangle"
-//     | "text"
-//     | "picture"
-//     | "eraser";
-//   text: string;
-//   roughElement: Drawable;
-// }
-
 const nearPoint = (
   x: number,
   y: number,
@@ -500,7 +479,16 @@ const App: FC = () => {
         const textWidth = ctx.measureText(options?.text).width;
         const textHeight = 24;
         elementsCopy[id] = {
-          ...createElement(id, x1, y1, x1 + textWidth, y1 + textHeight, type, undefined, color),
+          ...createElement(
+            id,
+            x1,
+            y1,
+            x1 + textWidth,
+            y1 + textHeight,
+            type,
+            undefined,
+            color,
+          ),
           text: options?.text,
         };
         break;
@@ -775,7 +763,7 @@ const App: FC = () => {
     setSelectedElement(null);
   };
 
-  const handleTouchEnd = (e: any) => { 
+  const handleTouchEnd = (e: any) => {
     const canvas: any = document.getElementById("canvas");
 
     const touch = e.touches[0];
@@ -960,73 +948,73 @@ const App: FC = () => {
           </ul>
         </div>
         <div className="flex lg:m-0 m-2">
-        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg flex items-center content-center justify-center">
-          <ul className="flex justify-center items-center lg:p-4 p-2">
-            <li className="lg:p-2 mr-4">
-              <div
-                className="w-6 h-6 border-2 rounded-md border-black cursor-pointer"
-                style={{
-                  backgroundColor: fillColor === "none" ? "#fff" : fillColor,
-                }}
-                onClick={() =>
-                  setSelectorFillColorIsShown(!selectorFillColorIsShown)
-                }
-                onMouseEnter={() => activateTooltip("fill")}
+          <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg flex items-center content-center justify-center">
+            <ul className="flex justify-center items-center lg:p-4 p-2">
+              <li className="lg:p-2 mr-4">
+                <div
+                  className="w-6 h-6 border-2 rounded-md border-black cursor-pointer"
+                  style={{
+                    backgroundColor: fillColor === "none" ? "#fff" : fillColor,
+                  }}
+                  onClick={() =>
+                    setSelectorFillColorIsShown(!selectorFillColorIsShown)
+                  }
+                  onMouseEnter={() => activateTooltip("fill")}
+                  onMouseLeave={diactivateTooltip}
+                ></div>
+                {selectorFillColorIsShown && (
+                  <Sketch
+                    className="absolute"
+                    color={fillColor === "none" ? "#fff" : fillColor}
+                    onChange={(color) => setFillColor(color.hex)}
+                  />
+                )}
+              </li>
+              <li
+                className="lg:p-2"
+                onClick={() => setFillColor("none")}
+                onMouseEnter={() => activateTooltip("clear")}
                 onMouseLeave={diactivateTooltip}
-              ></div>
-              {selectorFillColorIsShown && (
-                <Sketch
-                  className="absolute"
-                  color={fillColor === "none" ? "#fff" : fillColor}
-                  onChange={(color) => setFillColor(color.hex)}
+              >
+                <div className="w-6 h-6 border-2 rounded-md border-black cursor-pointer text-center items-center justify-center flex">
+                  X
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center flex">
+            <ul className="flex lg:px-4 px-2 content-center items-center justify-center">
+              <li
+                className="transition-colors rounded-lg content-center items-center justify-center flex flex-col"
+                onMouseEnter={() => activateTooltip("size")}
+                onMouseLeave={diactivateTooltip}
+              >
+                <p>{lineSize.toString()}</p>
+                <input
+                  className="lg:w-auto w-[100px]"
+                  type="range"
+                  min="1"
+                  max="50"
+                  value={lineSize}
+                  onChange={(e) => setLineSize(parseInt(e.target.value))}
                 />
-              )}
-            </li>
-            <li
-              className="lg:p-2"
-              onClick={() => setFillColor("none")}
-              onMouseEnter={() => activateTooltip("clear")}
-              onMouseLeave={diactivateTooltip}
-            >
-              <div className="w-6 h-6 border-2 rounded-md border-black cursor-pointer text-center items-center justify-center flex">
-                X
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center flex">
-          <ul className="flex lg:px-4 px-2 content-center items-center justify-center">
-            <li
-              className="transition-colors rounded-lg content-center items-center justify-center flex flex-col"
-              onMouseEnter={() => activateTooltip("size")}
-              onMouseLeave={diactivateTooltip}
-            >
-              <p>{lineSize.toString()}</p>
-              <input
-                className="lg:w-auto w-[100px]"
-                type="range"
-                min="1"
-                max="50"
-                value={lineSize}
-                onChange={(e) => setLineSize(parseInt(e.target.value))}
-              />
-            </li>
-          </ul>
-        </div>
-        <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
-          <ul className="flex lg:p-4 p-2 content-center items-center justify-center">
-            <li
-              className="cursor-pointer lg:p-2 p-1 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
-              onClick={() => setLibraryIsShown(true)}
-              onMouseEnter={() => activateTooltip("library")}
-              onMouseLeave={diactivateTooltip}
-            >
-              <Grid />
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
+          <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
+            <ul className="flex lg:p-4 p-2 content-center items-center justify-center">
+              <li
+                className="cursor-pointer lg:p-2 p-1 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
+                onClick={() => setLibraryIsShown(true)}
+                onMouseEnter={() => activateTooltip("library")}
+                onMouseLeave={diactivateTooltip}
+              >
+                <Grid />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
       {action === "writing" ? (
         <textarea
           ref={textAreaRef}
