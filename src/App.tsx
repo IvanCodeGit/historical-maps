@@ -1,8 +1,11 @@
 import { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import rough from "roughjs";
 import {
+  AlertCircle,
+  Circle,
   CornerUpLeft,
   CornerUpRight,
+  Download,
   Edit2,
   Edit3,
   Grid,
@@ -11,10 +14,13 @@ import {
   Trash2,
   Type,
 } from "react-feather";
+import { Image as ImageIcon } from "react-feather";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import getStroke from "perfect-freehand";
 import { Sketch } from "@uiw/react-color";
 import UkraineMap from "./components/UkraineMap";
+
+// portraits
 
 import Vynychenko from "./assets/portraits/Vynnychenko.jpg";
 import Petlura from "./assets/portraits/Petlura.jpg";
@@ -29,6 +35,14 @@ import Petrushevych from "./assets/portraits/Petrushevych.jpg";
 import Kociubynskiy from "./assets/portraits/Kociubynskiy.jpg";
 import Bezruczko from "./assets/portraits/Bezruczko.jpg";
 import Konovalec from "./assets/portraits/Konovalec.png";
+
+// library icons
+
+import RedFlag from "./assets/l-icons/red_flag.svg";
+import Swords from "./assets/l-icons/swords.png";
+import Castle from "./assets/l-icons/castle.png";
+
+import Map from "./assets/UkraineMap.svg";
 
 const generator = rough.generator();
 
@@ -257,6 +271,9 @@ const App: FC = () => {
 
   const [libraryIsShwon, setLibraryIsShown] = useState(false);
   const [selectedImage, setSelectedImage] = useState("none");
+  const [libraryTab, setLibraryTab] = useState<"portraits" | "icons">(
+    "portraits",
+  );
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -339,6 +356,15 @@ const App: FC = () => {
           case "Konovalec":
             img.src = Konovalec;
             break;
+          case "RedFlag":
+            img.src = RedFlag;
+            break;
+          case "Swords":
+            img.src = Swords;
+            break;
+          case "Castle":
+            img.src = Castle;
+            break;
           default:
             switch (selectedImage) {
               case "Vynychenko":
@@ -393,6 +419,18 @@ const App: FC = () => {
                 img.src = Konovalec;
                 imageName = "Konovalec";
                 break;
+              case "RedFlag":
+                img.src = RedFlag;
+                imageName = "RedFlag";
+                break;
+              case "Swords":
+                img.src = Swords;
+                imageName = "Swords";
+                break;
+              case "Castle":
+                img.src = Castle;
+                imageName = "Castle";
+                break;
             }
         }
         return { id, type, x1, y1, x2, y2, img, imageName };
@@ -407,6 +445,13 @@ const App: FC = () => {
     const roughCanvas = rough.canvas(canvas);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    var background = new Image();
+    background.src = Map;
+
+    // background.onload = function () {
+    //   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    // };
 
     elements.forEach((element: any) => {
       if (action === "writing" && selectedElement.id === element.id) return;
@@ -847,7 +892,18 @@ const App: FC = () => {
         return <p>Розмір лінії</p>;
       case "library":
         return <p>Бібліотека</p>;
+      case "info":
+        return <p>Інформація</p>;
+      case "download":
+        return <p>Завантажити</p>;
     }
+  };
+
+  const saveImg = () => {
+    var canvas: any = document.getElementById("canvas");
+    var button: any = document.getElementById("download");
+    var dataUrl = canvas.toDataURL("image/jpg");
+    button.href = dataUrl;
   };
 
   return (
@@ -1013,6 +1069,37 @@ const App: FC = () => {
               </li>
             </ul>
           </div>
+          <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
+            <ul className="flex lg:p-4 p-2 content-center items-center justify-center">
+              <li
+                className="cursor-pointer lg:p-2 p-1 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
+                onMouseEnter={() => activateTooltip("info")}
+                onMouseLeave={diactivateTooltip}
+              >
+                <a
+                  href="https://uinp.gov.ua/aktualni-temy/ukrayinska-revolyuciya-1917-1921-rokiv"
+                  target="_blank"
+                >
+                  <AlertCircle />
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="lg:m-6 m-2 ml-0 bg-white shadow-md rounded-lg items-center content-center justify-center">
+            <ul className="flex lg:p-4 p-2 content-center items-center justify-center">
+              <a
+                id="download"
+                download="map"
+                href=""
+                className="cursor-pointer lg:p-2 p-1 transition-colors hover:bg-blue-300 hover:text-white rounded-lg content-center items-center justify-center"
+                onClick={() => saveImg()}
+                onMouseEnter={() => activateTooltip("download")}
+                onMouseLeave={diactivateTooltip}
+              >
+                <Download />
+              </a>
+            </ul>
+          </div>
         </div>
       </div>
       {action === "writing" ? (
@@ -1036,140 +1123,226 @@ const App: FC = () => {
       ) : null}
       <UkraineMap />
       {libraryIsShwon && (
-        <div
-          className="bg-white shadow-md p-2 rounded-md grid lg:grid-cols-6 grid-cols-4 absolute items-center justify-center z-10 w-full h-full"
-          onClick={() => setLibraryIsShown(false)}
-        >
-          <img
-            id="Vynychenko"
-            src={Vynychenko}
-            className={
-              selectedImage === "Vynychenko" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Vynychenko"), setTool("image");
-            }}
-          />
-          <img
-            id="Petlura"
-            src={Petlura}
-            className={
-              selectedImage === "Petlura" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Petlura"), setTool("image");
-            }}
-          />
-          <img
-            id="Bolbochan"
-            src={Bolbachan}
-            className={
-              selectedImage === "Bolbachan" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Bolbachan"), setTool("image");
-            }}
-          />
-          <img
-            id="Skoropadsky"
-            src={Skoropadsky}
-            className={
-              selectedImage === "Skoropadsky" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Skoropadsky"), setTool("image");
-            }}
-          />
-          <img
-            id="Nestor"
-            src={Nestor}
-            className={
-              selectedImage === "Nestor" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Nestor"), setTool("image");
-            }}
-          />
-          <img
-            id="Hryhorjev"
-            src={Hryhorjev}
-            className={
-              selectedImage === "Hryhorjev" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Hryhorjev"), setTool("image");
-            }}
-          />
-          <img
-            id="Denikin"
-            src={Denikin}
-            className={
-              selectedImage === "Denikin" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Denikin"), setTool("image");
-            }}
-          />
-          <img
-            id="Wrangel"
-            src={Wrangel}
-            className={
-              selectedImage === "Wrangel" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Wrangel"), setTool("image");
-            }}
-          />
-          <img
-            id="Vitovsky"
-            src={Vitovsky}
-            className={
-              selectedImage === "Vitovsky" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Vitovsky"), setTool("image");
-            }}
-          />
-          <img
-            id="Petrushevych"
-            src={Petrushevych}
-            className={
-              selectedImage === "Petrushevych" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Petrushevych"), setTool("image");
-            }}
-          />
-          <img
-            id="Kociubynskiy"
-            src={Kociubynskiy}
-            className={
-              selectedImage === "Kociubynskiy" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Kociubynskiy"), setTool("image");
-            }}
-          />
-          <img
-            id="Bezruczko"
-            src={Bezruczko}
-            className={
-              selectedImage === "Bezruczko" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Bezruczko"), setTool("image");
-            }}
-          />
-          <img
-            id="Konovalec"
-            src={Konovalec}
-            className={
-              selectedImage === "Konovalec" ? "selectedPortrait" : "portrait"
-            }
-            onClick={() => {
-              setSelectedImage("Konovalec"), setTool("image");
-            }}
-          />
+        <div className="bg-white shadow-md p-2 rounded-md  absolute items-center justify-center z-10 w-full h-full">
+          <div className="mt-6 mb-6 flex flex-row items-center justify-between m-6">
+            <ul className="flex flex-row">
+              <li
+                className={
+                  libraryTab === "portraits"
+                    ? "selectedLibraryTab"
+                    : "libraryTab"
+                }
+                onClick={() => setLibraryTab("portraits")}
+              >
+                <ImageIcon className="mr-2" />
+                <p>Портрети</p>
+              </li>
+              <li
+                className={
+                  libraryTab === "icons" ? "selectedLibraryTab" : "libraryTab"
+                }
+                onClick={() => setLibraryTab("icons")}
+              >
+                <Circle className="mr-2" />
+                <p>Значки</p>
+              </li>
+            </ul>
+            <div
+              className="cursor-pointer bg-blue-300 rounded-xl p-2 text-white"
+              onClick={() => setLibraryIsShown(false)}
+            >
+              <p>Готово</p>
+            </div>
+          </div>
+          {libraryTab === "portraits" ? (
+            <div className="grid lg:grid-cols-7 grid-cols-6 m-6">
+              <img
+                id="Vynychenko"
+                src={Vynychenko}
+                className={
+                  selectedImage === "Vynychenko"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Vynychenko"), setTool("image");
+                }}
+              />
+              <img
+                id="Petlura"
+                src={Petlura}
+                className={
+                  selectedImage === "Petlura" ? "selectedPortrait" : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Petlura"), setTool("image");
+                }}
+              />
+              <img
+                id="Bolbochan"
+                src={Bolbachan}
+                className={
+                  selectedImage === "Bolbachan"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Bolbachan"), setTool("image");
+                }}
+              />
+              <img
+                id="Skoropadsky"
+                src={Skoropadsky}
+                className={
+                  selectedImage === "Skoropadsky"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Skoropadsky"), setTool("image");
+                }}
+              />
+              <img
+                id="Nestor"
+                src={Nestor}
+                className={
+                  selectedImage === "Nestor" ? "selectedPortrait" : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Nestor"), setTool("image");
+                }}
+              />
+              <img
+                id="Hryhorjev"
+                src={Hryhorjev}
+                className={
+                  selectedImage === "Hryhorjev"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Hryhorjev"), setTool("image");
+                }}
+              />
+              <img
+                id="Denikin"
+                src={Denikin}
+                className={
+                  selectedImage === "Denikin" ? "selectedPortrait" : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Denikin"), setTool("image");
+                }}
+              />
+              <img
+                id="Wrangel"
+                src={Wrangel}
+                className={
+                  selectedImage === "Wrangel" ? "selectedPortrait" : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Wrangel"), setTool("image");
+                }}
+              />
+              <img
+                id="Vitovsky"
+                src={Vitovsky}
+                className={
+                  selectedImage === "Vitovsky" ? "selectedPortrait" : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Vitovsky"), setTool("image");
+                }}
+              />
+              <img
+                id="Petrushevych"
+                src={Petrushevych}
+                className={
+                  selectedImage === "Petrushevych"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Petrushevych"), setTool("image");
+                }}
+              />
+              <img
+                id="Kociubynskiy"
+                src={Kociubynskiy}
+                className={
+                  selectedImage === "Kociubynskiy"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Kociubynskiy"), setTool("image");
+                }}
+              />
+              <img
+                id="Bezruczko"
+                src={Bezruczko}
+                className={
+                  selectedImage === "Bezruczko"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Bezruczko"), setTool("image");
+                }}
+              />
+              <img
+                id="Konovalec"
+                src={Konovalec}
+                className={
+                  selectedImage === "Konovalec"
+                    ? "selectedPortrait"
+                    : "portrait"
+                }
+                onClick={() => {
+                  setSelectedImage("Konovalec"), setTool("image");
+                }}
+              />
+            </div>
+          ) : (
+            <div className="m-6 grid lg:grid-cols-7 grid-cols-6">
+              <img
+                id="RedFlag"
+                src={RedFlag}
+                className={
+                  selectedImage === "RedFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("RedFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="Swords"
+                src={Swords}
+                className={
+                  selectedImage === "Swords"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("Swords"), setTool("image");
+                }}
+              />
+              <img
+                id="Castle"
+                src={Castle}
+                className={
+                  selectedImage === "Castle"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("Castle"), setTool("image");
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
       {tooltip.show === true && (

@@ -7,19 +7,6 @@ body {
   overflow: hidden;
 }
 
-/* map */
-
-#Ukraine {
-  height: 95vh;
-  margin: 24px;
-}
-
-.mapBackground {
-  fill: #74b2ff;
-  stroke: #74b2ff;
-  stroke-width: 4;
-}
-
 .toolBarItem {
   @apply cursor-pointer lg:p-2 p-[4px] mr-4 last:mr-0 transition-colors hover:bg-blue-300 hover:text-white rounded-lg;
 }
@@ -28,10 +15,26 @@ body {
   @apply cursor-pointer lg:p-2 p-[4px] mr-4 transition-colors bg-blue-300 text-white rounded-lg;
 }
 
+.libraryTab {
+  @apply flex flex-row mr-10 p-2 cursor-pointer hover:bg-blue-300 hover:text-white transition-colors rounded-xl
+}
+
+.selectedLibraryTab {
+  @apply flex flex-row mr-10 p-2 cursor-pointer bg-blue-300 text-white transition-colors rounded-xl
+}
+
 .portrait {
   @apply lg:w-[200px] lg:h-[250px] w-[70px] h-[100px] lg:mr-6 cursor-pointer rounded-md border-4 hover:border-blue-300 transition-colors;
 }
 
 .selectedPortrait {
   @apply lg:w-[200px] lg:h-[250px] w-[70px] h-[100px] lg:mr-6 cursor-pointer rounded-md border-4 border-blue-300;
+}
+
+.libraryIcon {
+  @apply w-[150px] h-[150px] cursor-pointer rounded-md border-4 hover:border-blue-300 transition-colors p-2;
+}
+
+.selectedLibraryIcon {
+  @apply w-[150px] h-[150px] cursor-pointer rounded-md border-4 border-blue-300 p-2;
 }
