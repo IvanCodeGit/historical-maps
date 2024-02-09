@@ -2,12 +2,14 @@ import { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import rough from "roughjs";
 import {
   AlertCircle,
+  Archive,
   Circle,
   CornerUpLeft,
   CornerUpRight,
   Download,
   Edit2,
   Edit3,
+  Flag,
   Grid,
   MousePointer,
   Square,
@@ -36,11 +38,24 @@ import Kociubynskiy from "./assets/portraits/Kociubynskiy.jpg";
 import Bezruczko from "./assets/portraits/Bezruczko.jpg";
 import Konovalec from "./assets/portraits/Konovalec.png";
 
+// library actions
+
+import AktZluky from "./assets/l-actions/akt_zlucky.jpeg";
+import PetluraPislydski from "./assets/l-actions/petlura_pislydski.jpeg";
+
 // library icons
 
 import RedFlag from "./assets/l-icons/red_flag.svg";
 import Swords from "./assets/l-icons/swords.png";
 import Castle from "./assets/l-icons/castle.png";
+
+// library flags
+
+import UkraineFlag from "./assets/l-flags/ukraine_flag.svg";
+import WhiteFlag from "./assets/l-flags/white_flag.png";
+import SovietFlag from "./assets/l-flags/soviet_flag.png";
+
+// map
 
 import Map from "./assets/UkraineMap.svg";
 
@@ -271,9 +286,9 @@ const App: FC = () => {
 
   const [libraryIsShwon, setLibraryIsShown] = useState(false);
   const [selectedImage, setSelectedImage] = useState("none");
-  const [libraryTab, setLibraryTab] = useState<"portraits" | "icons">(
-    "portraits",
-  );
+  const [libraryTab, setLibraryTab] = useState<
+    "portraits" | "actions" | "icons" | "flags"
+  >("portraits");
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -365,6 +380,21 @@ const App: FC = () => {
           case "Castle":
             img.src = Castle;
             break;
+          case "UkraineFlag":
+            img.src = UkraineFlag;
+            break;
+          case "WhiteFlag":
+            img.src = WhiteFlag;
+            break;
+          case "SovietFlag":
+            img.src = SovietFlag;
+            break;
+          case "AktZluky":
+            img.src = AktZluky;
+            break;
+          case "PetluraPislydski":
+            img.src = PetluraPislydski;
+            break;
           default:
             switch (selectedImage) {
               case "Vynychenko":
@@ -430,6 +460,26 @@ const App: FC = () => {
               case "Castle":
                 img.src = Castle;
                 imageName = "Castle";
+                break;
+              case "UkraineFlag":
+                img.src = UkraineFlag;
+                imageName = "UkraineFlag";
+                break;
+              case "WhiteFlag":
+                img.src = WhiteFlag;
+                imageName = "WhiteFlag";
+                break;
+              case "SovietFlag":
+                img.src = SovietFlag;
+                imageName = "SovietFlag";
+                break;
+              case "AktZluky":
+                img.src = AktZluky;
+                imageName = "AktZluky";
+                break;
+              case "PetluraPislydski":
+                img.src = PetluraPislydski;
+                imageName = "PetluraPislydski";
                 break;
             }
         }
@@ -994,7 +1044,7 @@ const App: FC = () => {
               <CornerUpRight />
             </li>
             <li
-              className="toolBarItem"
+              className="toolBarItemTrash"
               onClick={clearCanvas}
               onMouseEnter={() => activateTooltip("delete")}
               onMouseLeave={() => diactivateTooltip()}
@@ -1125,7 +1175,7 @@ const App: FC = () => {
       {libraryIsShwon && (
         <div className="bg-white shadow-md p-2 rounded-md  absolute items-center justify-center z-10 w-full h-full">
           <div className="mt-6 mb-6 flex flex-row items-center justify-between m-6">
-            <ul className="flex flex-row">
+            <ul className="flex flex-row items-center">
               <li
                 className={
                   libraryTab === "portraits"
@@ -1139,6 +1189,15 @@ const App: FC = () => {
               </li>
               <li
                 className={
+                  libraryTab === "actions" ? "selectedLibraryTab" : "libraryTab"
+                }
+                onClick={() => setLibraryTab("actions")}
+              >
+                <Archive className="mr-2" />
+                <p>Події</p>
+              </li>
+              <li
+                className={
                   libraryTab === "icons" ? "selectedLibraryTab" : "libraryTab"
                 }
                 onClick={() => setLibraryTab("icons")}
@@ -1146,13 +1205,34 @@ const App: FC = () => {
                 <Circle className="mr-2" />
                 <p>Значки</p>
               </li>
+              <li
+                className={
+                  libraryTab === "flags" ? "selectedLibraryTab" : "libraryTab"
+                }
+                onClick={() => setLibraryTab("flags")}
+              >
+                <Flag className="mr-2" />
+                <p>Прапори</p>
+              </li>
             </ul>
-            <div
-              className="cursor-pointer bg-blue-300 rounded-xl p-2 text-white"
-              onClick={() => setLibraryIsShown(false)}
-            >
-              <p>Готово</p>
-            </div>
+            <ul className="flex flex-row items-center">
+              <li
+                className="cursor-pointer bg-red-300 rounded-xl p-2 text-white mr-4"
+                onClick={() => {
+                  setSelectedImage("none");
+                  setTool("selection");
+                  setLibraryIsShown(false);
+                }}
+              >
+                <p>Відміна</p>
+              </li>
+              <li
+                className="cursor-pointer bg-blue-300 rounded-xl p-2 text-white"
+                onClick={() => setLibraryIsShown(false)}
+              >
+                <p>Готово</p>
+              </li>
+            </ul>
           </div>
           {libraryTab === "portraits" ? (
             <div className="grid lg:grid-cols-7 grid-cols-6 m-6">
@@ -1303,7 +1383,34 @@ const App: FC = () => {
                 }}
               />
             </div>
-          ) : (
+          ) : libraryTab === "actions" ? (
+            <div className="m-6 grid lg:grid-cols-7 grid-cols-6">
+              <img
+                id="AktZluky"
+                src={AktZluky}
+                className={
+                  selectedImage === "AktZluky"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("AktZluky"), setTool("image");
+                }}
+              />
+              <img
+                id="PetluraPislydski"
+                src={PetluraPislydski}
+                className={
+                  selectedImage === "PetluraPislydski"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("PetluraPislydski"), setTool("image");
+                }}
+              />
+            </div>
+          ) : libraryTab === "icons" ? (
             <div className="m-6 grid lg:grid-cols-7 grid-cols-6">
               <img
                 id="RedFlag"
@@ -1342,6 +1449,47 @@ const App: FC = () => {
                 }}
               />
             </div>
+          ) : libraryTab === "flags" ? (
+            <div className="m-6 grid lg:grid-cols-7 grid-cols-6">
+              <img
+                id="UkraineFlag"
+                src={UkraineFlag}
+                className={
+                  selectedImage === "UkraineFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("UkraineFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="WhiteFlag"
+                src={WhiteFlag}
+                className={
+                  selectedImage === "WhiteFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("WhiteFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="SovietFlag"
+                src={SovietFlag}
+                className={
+                  selectedImage === "SovietFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("SovietFlag"), setTool("image");
+                }}
+              />
+            </div>
+          ) : (
+            <p>Failed to load tab!</p>
           )}
         </div>
       )}
