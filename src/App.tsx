@@ -988,7 +988,9 @@ const App: FC = () => {
     const ctx = canvas.getContext("2d");
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setElements([]);
+    if (elements.length != 0) {
+      setElements([]);
+    }
   };
 
   const renderTooltip = (type: string) => {
