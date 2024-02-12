@@ -54,6 +54,9 @@ import Castle from "./assets/l-icons/castle.png";
 import UkraineFlag from "./assets/l-flags/ukraine_flag.svg";
 import WhiteFlag from "./assets/l-flags/white_flag.png";
 import SovietFlag from "./assets/l-flags/soviet_flag.png";
+import GermanEmpireFlag from "./assets/l-flags/german_empire_flag.svg";
+import AustroHungaryFlag from "./assets/l-flags/austro_hungary_flag.png";
+import RomaniaFlag from "./assets/l-flags/romania_flag.png";
 
 // map
 
@@ -273,7 +276,9 @@ interface Tooltip {
 const App: FC = () => {
   const [elements, setElements, undo, redo] = useHistory([]);
   const [action, setAction] = useState("none");
-  const [tool, setTool] = useState("selection");
+  const [tool, setTool] = useState<
+    "selection" | "pencil" | "line" | "rectangle" | "text" | "image"
+  >("selection");
   const [selectedElement, setSelectedElement] = useState<any>(null);
 
   const [tooltip, setTooltip] = useState<Tooltip>({} as Tooltip);
@@ -395,6 +400,15 @@ const App: FC = () => {
           case "PetluraPislydski":
             img.src = PetluraPislydski;
             break;
+          case "GermanEmpireFlag":
+            img.src = GermanEmpireFlag;
+            break;
+          case "AustroHungaryFlag":
+            img.src = AustroHungaryFlag;
+            break;
+          case "RomaniaFlag":
+            img.src = RomaniaFlag;
+            break;
           default:
             switch (selectedImage) {
               case "Vynychenko":
@@ -481,6 +495,18 @@ const App: FC = () => {
                 img.src = PetluraPislydski;
                 imageName = "PetluraPislydski";
                 break;
+              case "GermanEmpireFlag":
+                img.src = GermanEmpireFlag;
+                imageName = "GermanEmpireFlag";
+                break;
+              case "AustroHungaryFlag":
+                img.src = AustroHungaryFlag;
+                imageName = "GermanEmpireFlag";
+                break;
+              case "RomaniaFlag":
+                img.src = RomaniaFlag;
+                imageName = "GermanEmpireFlag";
+                break;
             }
         }
         return { id, type, x1, y1, x2, y2, img, imageName };
@@ -508,6 +534,65 @@ const App: FC = () => {
       drawElement(roughCanvas, ctx, element);
     });
   }, [elements, action, selectedElement]);
+
+  useEffect(() => {
+    const pressKey = (e: any) => {
+      if (action === "none") {
+        if (e.shiftKey) {
+          switch (e.key) {
+            case "D":
+              clearCanvas();
+              break;
+            case "C":
+              setSelectorFillColorIsShown(!selectorFillColorIsShown);
+              break;
+            case "X":
+              setFillColor("none");
+              break;
+            case "ArrowRight":
+              if (lineSize != 50) {
+                setLineSize(lineSize + 1);
+              }
+              break;
+            case "ArrowLeft":
+              if (lineSize > 1) {
+                setLineSize(lineSize - 1);
+              }
+              break;
+            case "L":
+              setLibraryIsShown(!libraryIsShwon);
+              break;
+            case "I":
+              var link: any = document.getElementById("infoLink");
+              window.open(link.href, "_blank");
+          }
+        } else {
+          switch (e.key) {
+            case "1":
+              setTool("selection");
+              break;
+            case "2":
+              setTool("pencil");
+              break;
+            case "3":
+              setTool("line");
+              break;
+            case "4":
+              setTool("rectangle");
+              break;
+            case "5":
+              setTool("text");
+              break;
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", pressKey);
+    return () => {
+      document.removeEventListener("keydown", pressKey);
+    };
+  }, [action, tool, selectorFillColorIsShown, lineSize, libraryIsShwon]);
 
   useEffect(() => {
     const undoRedoFunction = (e: any) => {
@@ -919,31 +1004,31 @@ const App: FC = () => {
   const renderTooltip = (type: string) => {
     switch (type) {
       case "selection":
-        return <p>Курсор</p>;
+        return <p>Курсор (1)</p>;
       case "pencil":
-        return <p>Олівець</p>;
+        return <p>Олівець (2)</p>;
       case "line":
-        return <p>Лінія</p>;
+        return <p>Лінія (3)</p>;
       case "rectangle":
-        return <p>Квадрат</p>;
+        return <p>Прямокутник (4)</p>;
       case "text":
-        return <p>Текст</p>;
+        return <p>Текст (5)</p>;
       case "undo":
-        return <p>Повернути дію</p>;
+        return <p>Повернути дію (win-z, cmd-z)</p>;
       case "redo":
-        return <p>Переробити дію</p>;
+        return <p>Переробити дію (win-shift-z, cmd-shift-z)</p>;
       case "delete":
-        return <p>Видалити все</p>;
+        return <p>Видалити все (shift-d)</p>;
       case "fill":
-        return <p>Колір заливки</p>;
+        return <p>Колір заливки (shift-c)</p>;
       case "clear":
-        return <p>Прибрати колір заливки</p>;
+        return <p>Прибрати колір заливки (shift-x)</p>;
       case "size":
-        return <p>Розмір лінії</p>;
+        return <p>Розмір лінії (shift-ArrowLeft, shift-ArrowRight)</p>;
       case "library":
-        return <p>Бібліотека</p>;
+        return <p>Бібліотека (shift-l)</p>;
       case "info":
-        return <p>Інформація</p>;
+        return <p>Інформація (shift-i)</p>;
       case "download":
         return <p>Завантажити</p>;
     }
@@ -1127,6 +1212,7 @@ const App: FC = () => {
                 onMouseLeave={diactivateTooltip}
               >
                 <a
+                  id="infoLink"
                   href="https://uinp.gov.ua/aktualni-temy/ukrayinska-revolyuciya-1917-1921-rokiv"
                   target="_blank"
                 >
@@ -1485,6 +1571,42 @@ const App: FC = () => {
                 }
                 onClick={() => {
                   setSelectedImage("SovietFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="GermanEmpireFlag"
+                src={GermanEmpireFlag}
+                className={
+                  selectedImage === "GermanEmpireFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("GermanEmpireFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="AustroHungaryFlag"
+                src={AustroHungaryFlag}
+                className={
+                  selectedImage === "AustroHungaryFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("AustroHungaryFlag"), setTool("image");
+                }}
+              />
+              <img
+                id="RomaniaFlag"
+                src={RomaniaFlag}
+                className={
+                  selectedImage === "RomaniaFlag"
+                    ? "selectedLibraryIcon"
+                    : "libraryIcon"
+                }
+                onClick={() => {
+                  setSelectedImage("RomaniaFlag"), setTool("image");
                 }}
               />
             </div>
