@@ -20,47 +20,38 @@ import { Image as ImageIcon } from "react-feather";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import getStroke from "perfect-freehand";
 import { Sketch } from "@uiw/react-color";
-import UkraineMap from "./components/UkraineMap";
 
-// portraits
+import {
+  Vynychenko,
+  Petlura,
+  Bolbachan,
+  Skoropadsky,
+  Nestor,
+  Hryhorjev,
+  Denikin,
+  Wrangel,
+  Vitovsky,
+  Petrushevych,
+  Kociubynskiy,
+  Bezruczko,
+  Konovalec,
+  AktZluky,
+  PetluraPislydski,
+  RedFlag,
+  Swords,
+  Castle,
+  UkraineFlag,
+  WhiteFlag,
+  SovietFlag,
+  GermanEmpireFlag,
+  AustroHungaryFlag,
+  RomaniaFlag,
+} from "./imports/LibraryImports";
 
-import Vynychenko from "./assets/portraits/Vynnychenko.jpg";
-import Petlura from "./assets/portraits/Petlura.jpg";
-import Bolbachan from "./assets/portraits/Bolbochan.jpg";
-import Skoropadsky from "./assets/portraits/Skoropadsky.jpg";
-import Nestor from "./assets/portraits/Nestor.jpg";
-import Hryhorjev from "./assets/portraits/Hryhorjev.jpg";
-import Denikin from "./assets/portraits/Denikin.jpg";
-import Wrangel from "./assets/portraits/Wrangel.jpg";
-import Vitovsky from "./assets/portraits/Vitovsky.jpg";
-import Petrushevych from "./assets/portraits/Petrushevych.jpg";
-import Kociubynskiy from "./assets/portraits/Kociubynskiy.jpg";
-import Bezruczko from "./assets/portraits/Bezruczko.jpg";
-import Konovalec from "./assets/portraits/Konovalec.png";
-
-// library actions
-
-import AktZluky from "./assets/l-actions/akt_zlucky.jpeg";
-import PetluraPislydski from "./assets/l-actions/petlura_pislydski.jpeg";
-
-// library icons
-
-import RedFlag from "./assets/l-icons/red_flag.svg";
-import Swords from "./assets/l-icons/swords.png";
-import Castle from "./assets/l-icons/castle.png";
-
-// library flags
-
-import UkraineFlag from "./assets/l-flags/ukraine_flag.svg";
-import WhiteFlag from "./assets/l-flags/white_flag.png";
-import SovietFlag from "./assets/l-flags/soviet_flag.png";
-import GermanEmpireFlag from "./assets/l-flags/german_empire_flag.svg";
-import AustroHungaryFlag from "./assets/l-flags/austro_hungary_flag.png";
-import RomaniaFlag from "./assets/l-flags/romania_flag.png";
-
-// map
+// Map
 
 import Map from "./assets/UkraineMap.svg";
+import UkraineMap from "./components/UkraineMap";
 
 const generator = rough.generator();
 
@@ -318,7 +309,6 @@ const App: FC = () => {
         const rectangle = generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
           fill: color === "none" ? undefined : color,
         });
-
         return {
           id,
           x1,
@@ -336,182 +326,13 @@ const App: FC = () => {
         return { id, type, x1, y1, x2, y2, text: "", color };
       case "image":
         const img = new Image(x2 - x1, y2 - y1);
-        switch (imageName) {
-          case "Vynychenko":
-            img.src = Vynychenko;
-            break;
-          case "Petlura":
-            img.src = Petlura;
-            break;
-          case "Bolbachan":
-            img.src = Bolbachan;
-            break;
-          case "Skoropadsky":
-            img.src = Skoropadsky;
-            break;
-          case "Nestor":
-            img.src = Nestor;
-            break;
-          case "Hryhorjev":
-            img.src = Hryhorjev;
-            break;
-          case "Denikin":
-            img.src = Denikin;
-            break;
-          case "Wrangel":
-            img.src = Wrangel;
-            break;
-          case "Vitovsky":
-            img.src = Vitovsky;
-            break;
-          case "Petrushevych":
-            img.src = Petrushevych;
-            break;
-          case "Kociubynskiy":
-            img.src = Kociubynskiy;
-            break;
-          case "Bezruczko":
-            img.src = Bezruczko;
-            break;
-          case "Konovalec":
-            img.src = Konovalec;
-            break;
-          case "RedFlag":
-            img.src = RedFlag;
-            break;
-          case "Swords":
-            img.src = Swords;
-            break;
-          case "Castle":
-            img.src = Castle;
-            break;
-          case "UkraineFlag":
-            img.src = UkraineFlag;
-            break;
-          case "WhiteFlag":
-            img.src = WhiteFlag;
-            break;
-          case "SovietFlag":
-            img.src = SovietFlag;
-            break;
-          case "AktZluky":
-            img.src = AktZluky;
-            break;
-          case "PetluraPislydski":
-            img.src = PetluraPislydski;
-            break;
-          case "GermanEmpireFlag":
-            img.src = GermanEmpireFlag;
-            break;
-          case "AustroHungaryFlag":
-            img.src = AustroHungaryFlag;
-            break;
-          case "RomaniaFlag":
-            img.src = RomaniaFlag;
-            break;
-          default:
-            switch (selectedImage) {
-              case "Vynychenko":
-                img.src = Vynychenko;
-                imageName = "Vynychenko";
-                break;
-              case "Petlura":
-                img.src = Petlura;
-                imageName = "Petlura";
-                break;
-              case "Bolbachan":
-                img.src = Bolbachan;
-                imageName = "Bolbachan";
-                break;
-              case "Skoropadsky":
-                img.src = Skoropadsky;
-                imageName = "Skoropadsky";
-                break;
-              case "Nestor":
-                img.src = Nestor;
-                imageName = "Nestor";
-                break;
-              case "Hryhorjev":
-                img.src = Hryhorjev;
-                imageName = "Hryhorjev";
-                break;
-              case "Denikin":
-                img.src = Denikin;
-                imageName = "Denikin";
-                break;
-              case "Wrangel":
-                img.src = Wrangel;
-                imageName = "Wrangel";
-                break;
-              case "Vitovsky":
-                img.src = Vitovsky;
-                imageName = "Vitovsky";
-                break;
-              case "Petrushevych":
-                img.src = Petrushevych;
-                imageName = "Petrushevych";
-                break;
-              case "Kociubynskiy":
-                img.src = Kociubynskiy;
-                imageName = "Kociubynskiy";
-                break;
-              case "Bezruczko":
-                img.src = Bezruczko;
-                imageName = "Bezruczko";
-                break;
-              case "Konovalec":
-                img.src = Konovalec;
-                imageName = "Konovalec";
-                break;
-              case "RedFlag":
-                img.src = RedFlag;
-                imageName = "RedFlag";
-                break;
-              case "Swords":
-                img.src = Swords;
-                imageName = "Swords";
-                break;
-              case "Castle":
-                img.src = Castle;
-                imageName = "Castle";
-                break;
-              case "UkraineFlag":
-                img.src = UkraineFlag;
-                imageName = "UkraineFlag";
-                break;
-              case "WhiteFlag":
-                img.src = WhiteFlag;
-                imageName = "WhiteFlag";
-                break;
-              case "SovietFlag":
-                img.src = SovietFlag;
-                imageName = "SovietFlag";
-                break;
-              case "AktZluky":
-                img.src = AktZluky;
-                imageName = "AktZluky";
-                break;
-              case "PetluraPislydski":
-                img.src = PetluraPislydski;
-                imageName = "PetluraPislydski";
-                break;
-              case "GermanEmpireFlag":
-                img.src = GermanEmpireFlag;
-                imageName = "GermanEmpireFlag";
-                break;
-              case "AustroHungaryFlag":
-                img.src = AustroHungaryFlag;
-                imageName = "GermanEmpireFlag";
-                break;
-              case "RomaniaFlag":
-                img.src = RomaniaFlag;
-                imageName = "GermanEmpireFlag";
-                break;
-            }
+        if (imageName) {
+          img.src = `./src/assets/library/${imageName}.png`;
+        } else {
+          img.src = `./src/assets/library/${selectedImage}.png`;
+          imageName = selectedImage;
         }
         return { id, type, x1, y1, x2, y2, img, imageName };
-      default:
-        throw new Error(`Type no recognised: ${type}`);
     }
   };
 
